@@ -1,0 +1,4 @@
+t2w,mask
+anatomy_align/case_0001_img.nii,anatomy_align/case_0001_mask.nii
+anatomy_align/case_0002_img.nii,anatomy_align/case_0002_mask.nii
+anatomy_align/case_0003_img.nii,anatomy_align/case_0003_mask.nii

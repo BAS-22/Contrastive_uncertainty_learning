@@ -1,0 +1,28 @@
+# ===========================================
+# CUL - Contrastive Uncertainty Learning
+# ===========================================
+# NOTE: pin these to the exact versions in the env you used for the paper:
+#   conda activate proFM && pip freeze | grep -i -E "torch|monai|timm|nibabel|numpy|scipy|pandas|matplotlib|tensorboard|surface"
+
+# ============ PyTorch (CUDA 11.8) ============
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch
+torchvision
+
+# ============ Medical imaging ============
+monai
+nibabel
+# DeepMind surface-distance (imported as `surface_distance` in engine/segment.py)
+surface-distance @ git+https://github.com/google-deepmind/surface-distance.git
+
+# ============ Vision ============
+timm            # uses timm.optim.optim_factory; pin the version that worked for you
+
+# ============ Data / analysis ============
+numpy
+scipy
+pandas
+matplotlib
+
+# ============ Logging ============
+tensorboard

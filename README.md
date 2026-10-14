@@ -31,7 +31,7 @@ These results come from 117 held-out test cases of a 589-scan multi-institute T2
 
 | Metric | Baseline | **CUL** | Class-based SupCon | Classic boundary loss |
 |---|---|---|---|---|
-| Dice ↑ | 0.8335 ± 0.0647 | **0.8338 ± 0.0651** | 0.8331 ± 0.0637 | 0.8338 ± 0.0634 |
+| Dice ↑ | 0.8335 ± 0.0647 | **0.8338 ± 0.0651** | 0.8331 ± 0.0637 | **0.8338 ± 0.0634** |
 | HD95 (mm) ↓ | 5.93 ± 8.14 | **5.41 ± 4.88** | 5.37 ± 4.66 | 5.63 ± 5.23 |
 | SD (mm) ↓ | 1.61 ± 2.51 | **1.42 ± 1.81** | 1.44 ± 1.89 | 1.46 ± 1.92 |
 | Structures with significant SD improvement (Wilcoxon) | – | **6 / 8** | 5 / 8 | 4 / 8 |
@@ -48,6 +48,8 @@ The paper also reports per-structure results and a hard-case analysis.
 - `compare_boundaries.py`: paired baseline-vs-CUL boundary comparison (HD95 / SD per case and per structure).
 - `script/segmentation/uncertainty_project/`: launch scripts for training, ablations and inference, plus the statistical-analysis scripts (Wilcoxon, structure-wise report, HD95 variance tests).
 - `spilt/anatomy/`: CSV files for the train, validation and test splits.
+- `scripts/train_cul.sh`, `scripts/test_cul.sh`: launchers that don't need a scheduler (`baseline`, `cul`, `class_based`, `classic_boundary`).
+- `examples/sample_split.csv`: example split CSV.
 - `util/`: distributed/misc helpers, LR schedule, and layer-wise LR decay.
 
 ## Installation
@@ -77,6 +79,7 @@ anatomy_align/case_0002_img.nii,anatomy_align/case_0002_mask.nii
 - The paper uses volumes of size `64 × 256 × 256` (D × H × W). Intensity normalisation and augmentation (rotation, zoom, flips) happen inside the loader.
 - The loaders read `spilt/anatomy/{train,val,test}.csv`. To use your own data, replace these files or edit `build_BpAnatomy_loader` in `dataset/dataset_seg.py`.
 - Use de-identified filenames only.
+- Only `--dataset anatomy` is supported in this release. The other loaders in `dataset/dataset_seg.py` (UCL / Promis*) are kept for reference and need split files that aren't distributed.
 
 The dataset used in the paper cannot be redistributed. See `examples/sample_split.csv` for the expected format.
 
@@ -162,6 +165,7 @@ The statistical tests in the paper (paired Wilcoxon, per-structure SD, HD95 vari
 ## Notes
 
 - Requires Python 3.10+ and a GPU with about 57 GB of memory for `64×256×256` volumes with M = 5 MC passes. An A40 or A100 80GB was used in the paper.
+- The launch scripts use `--batch_size 1` (no gradient accumulation) and the AdamW optimizer with layer-wise LR decay (`models/build_segment.py`).
 - With M = 5, CUL training takes about 0.9 s/iteration (about 10 h for 100 epochs), compared with about 0.4 s/iteration for the baseline.
 - The `script/segmentation/uncertainty_project/*.sh` files are SGE (`qsub`) job scripts from our cluster. Edit the paths and scheduler headers to fit your environment.
 - Do not commit private data, checkpoints, pretrained weights, or output folders.
